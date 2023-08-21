@@ -16,13 +16,13 @@ pipeline {
         
         stage('Containerize') {
             steps {
-                sh 'docker build -t node-hello-world:latest1 .'
+                sh 'docker build -t node-hello-world:latest .'
             }
         }
         
         stage('Run Container') {
             steps {
-                sh 'docker run -p 8082:8282 --name node-hello-world node-hello-world:latest1'
+                sh 'docker run -p 8082:8282 --name node-hello-world node-hello-world:latest'
             }
         }
     }
