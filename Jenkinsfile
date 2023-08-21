@@ -1,26 +1,42 @@
 pipeline {
     agent any
-    
+
     stages {
-        stage('https://github.com/sardaralii/hello.git') {
+        stage('Clone Code') {
             steps {
-                // Checkout the code from your Git repository
-                checkout([$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: 'https://github.com/yourusername/your-nodejs-repo.git']]])
+                git credentialsId: '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', url: 'https://github.com/sardaralii/hello.git'
             }
         }
-        
-        stage('Build') {
+
+        stage('Build and Run Locally') {
             steps {
-                // Install Node.js dependencies
-                sh 'npm install'
+                script {
+                    // Install Node.js dependencies and start the app
+                    sh 'npm install'
+                    sh 'npm start'
+                }
             }
         }
-        
-        stage('Run') {
+
+        stage('Dockerize and Run') {
             steps {
-                // Start the Node.js app
-                sh 'npm start'
+                script {
+                    // Build Docker image
+                    sh 'docker build -t node-hello-world:latest .'
+
+                    // Run Docker container
+                    sh 'docker run -it -p 8080:8080 --name node-hello-world node-hello-world:latest'
+                }
             }
+        }
+    }
+
+    post {
+        always {
+            // Clean up Docker resources
+            sh 'docker stop node-hello-world'
+            sh 'docker rm node-hello-world'
+            sh 'docker system prune -af'
         }
     }
 }
