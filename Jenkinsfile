@@ -20,13 +20,6 @@ pipeline {
             }
         }
         
-        stage('Stop and Remove Container') {
-            steps {
-                sh 'docker stop node-hello-world || true'
-                sh 'docker rm node-hello-world || true'
-            }
-        }
-        
         stage('Run Container') {
             steps {
                 sh 'docker run -p 8081:8080 --name node-hello-world node-hello-world:latest'
