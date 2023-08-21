@@ -2,11 +2,11 @@ pipeline {
     agent any
 
     stages {
-        stage('https://github.com/sardaralii/hello.git') {
+        stage('Checkout') {
             steps {
                 // Checkout your code from version control here
                 // For example:
-                // git 'https://github.com/yourusername/your-node-app.git'
+                // git 'https://github.com/sardaralii/hello.git'
             }
         }
         
