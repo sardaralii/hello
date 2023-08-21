@@ -22,7 +22,7 @@ pipeline {
         
         stage('Run Container') {
             steps {
-                sh 'docker run -p 8082:8282 --name node-hello-world node-hello-world:latest'
+                sh 'docker run -p 8081:8181 --name node-hello-world node-hello-world:latest'
             }
         }
     }
