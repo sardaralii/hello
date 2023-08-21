@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout') {
+        stage('https://github.com/sardaralii/hello.git') {
             steps {
                 // Checkout your code from version control here
                 // For example:
