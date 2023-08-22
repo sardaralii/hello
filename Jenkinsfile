@@ -13,7 +13,7 @@ pipeline {
             steps {
                 echo "Building the image"
                 sh "docker build -t node-hello-world:latest ."
-                sh "docker run -it -p 8080:8080 --name node-hello-world node-hello-world:latest"
+                sh "docker run -p 8080:8080 --name node-hello-world node-hello-world:latest"
             }
         }
         
