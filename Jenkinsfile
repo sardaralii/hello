@@ -24,7 +24,7 @@ pipeline {
                     // Tag Docker image
                     sh 'docker tag node-hello-world:latest sardar112/test-docker:latest'
 
-                    // Authenticate with Docker Hub
+                    //Login 
                     sh 'docker login -u sardar112 -p SAdabahar123'
 
                     // Push Docker image to Docker Hub
@@ -40,4 +40,6 @@ pipeline {
             }
         }
     }
+}
+
 
