@@ -4,8 +4,8 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                // Manually checkout code from Git repository
                 script {
+                    // Manually checkout code from Git repository
                     git branch: 'main', url: 'https://github.com/sardaralii/hello.git'
                 }
             }
@@ -15,6 +15,18 @@ pipeline {
             steps {
                 // Build Docker image
                 sh 'docker build -t node-hello-world:latest .'
+            }
+        }
+
+        stage('Tag and Push Docker Image') {
+            steps {
+                script {
+                    // Tag Docker image
+                    sh 'docker tag node-hello-world:latest sardar112/test-docker:latest'
+
+                    // Push Docker image to Docker Hub
+                    sh 'docker push sardar112/test-docker:latest'
+                }
             }
         }
 
