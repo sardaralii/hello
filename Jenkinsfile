@@ -1,42 +1,30 @@
 pipeline {
     agent any
-
+    
     stages {
-        stage('Clone Code') {
+        stage('Clone Repository') {
             steps {
-                git credentialsId: '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', url: 'https://github.com/sardaralii/hello.git'
+                // Clone the repository from your version control system
+                git branch: 'main', url: 'https://github.com/yourusername/node-hello-world.git'
             }
         }
-
-        stage('Build and Run Locally') {
+        
+        stage('Build Docker Image') {
             steps {
+                // Build the Docker image using the Dockerfile in the repository
                 script {
-                    // Install Node.js dependencies and start the app
-                    sh 'npm install'
-                    sh 'npm start'
+                    docker.build("node-hello-world:latest", ".")
                 }
             }
         }
-
-        stage('Dockerize and Run') {
+        
+        stage('Run in Container') {
             steps {
+                // Run the Docker container
                 script {
-                    // Build Docker image
-                    sh 'docker build -t node-hello-world:latest .'
-
-                    // Run Docker container
-                    sh 'docker run -it -p 8080:8080 --name node-hello-world node-hello-world:latest'
+                    docker.image("node-hello-world:latest").run("-p 8000:8080", "--name node-hello-world")
                 }
             }
-        }
-    }
-
-    post {
-        always {
-            // Clean up Docker resources
-            sh 'docker stop node-hello-world'
-            sh 'docker rm node-hello-world'
-            sh 'docker system prune -af'
         }
     }
 }
