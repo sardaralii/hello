@@ -1,28 +1,46 @@
-pipeline {
-    agent any
+pipeline{
 
-    stages {
-        stage('Checkout Code') {
-            steps {
-                // Manually checkout code from Git repository
-                script {
-                    git branch: 'main', url: 'https://github.com/sardaralii/hello.git'
-                }
-            }
-        }
+	agent {label 'linux'}
 
-        stage('Build Docker Image') {
-            steps {
-                // Build Docker image
-                sh 'docker build -t node-hello-world:latest .'
-            }
-        }
+	environment {
+		DOCKERHUB_CREDENTIALS=credentials('dockerhub')
+	}
 
-        stage('Run Docker Container') {
-            steps {
-                // Run Docker container
-                sh 'docker run -p 8082:8080 --name node-hello-world node-hello-world:latest'
-            }
-        }
-    }
+	stages {
+	    
+	    stage('gitclone') {
+
+			steps {
+				git 'https://github.com/sardaralii/hello.git'
+			}
+		}
+
+		stage('Build') {
+
+			steps {
+				sh 'docker build -t thetips4you/nodeapp_test:latest .'
+			}
+		}
+
+		stage('Login') {
+
+			steps {
+				sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+			}
+		}
+
+		stage('Push') {
+
+			steps {
+				sh 'docker push thetips4you/nodeapp_test:latest'
+			}
+		}
+	}
+
+	post {
+		always {
+			sh 'docker logout'
+		}
+	}
+
 }
