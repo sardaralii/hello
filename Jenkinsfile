@@ -1,36 +1,36 @@
 pipeline {
     agent any
-
+    
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub')
     }
 
     stages {
-
-        stage('gitclone') {
+        stage('Clone Repository') {
             steps {
-                git 'https://github.com/sardaralii/hello.git'
+                git url: 'https://github.com/sardaralii/hello.git'
             }
         }
 
-        stage('Build') {
+        stage('Build Docker Image') {
             steps {
-                sh 'docker build -t thetips4you/nodeapp_test:latest .'
-            }
-        }
-
-        stage('Login') {
-            steps {
-                withCredentials([string(credentialsId: 'sardar112', variable: 'DOCKERHUB_CREDENTIALS_USR'),
-                                 string(credentialsId: 'SAdabahar123', variable: 'DOCKERHUB_CREDENTIALS_PSW')]) {
-                    sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                script {
+                    def imageName = "yourusername/your-nodejs-app:latest"
+                    def dockerFile = "path/to/Dockerfile"  // Specify the path to your Dockerfile
+                    docker.build(imageName, "-f ${dockerFile} .")
                 }
             }
         }
 
-        stage('Push') {
+        stage('Push to Docker Hub') {
             steps {
-                sh 'docker push thetips4you/nodeapp_test:latest'
+                script {
+                    withCredentials([string(credentialsId: 'dockerhub', variable: 'DOCKERHUB_CREDENTIALS_PSW')]) {
+                        sh "echo '\$DOCKERHUB_CREDENTIALS_PSW' | docker login -u '\$DOCKERHUB_CREDENTIALS_USR' --password-stdin"
+                        def imageName = "yourusername/your-nodejs-app:latest"
+                        sh "docker push ${imageName}"
+                    }
+                }
             }
         }
     }
@@ -40,5 +40,4 @@ pipeline {
             sh 'docker logout'
         }
     }
-
 }
