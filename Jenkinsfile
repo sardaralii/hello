@@ -12,6 +12,7 @@ pipeline {
         stage("build") {
             steps {
                 echo "Building the image"
+                sh "npm install"
                 sh "docker build -t node-hello-world:latest ."
                 sh "docker run -d -p 8082:8080 --name node-hello-world node-hello-world:latest"
             }
