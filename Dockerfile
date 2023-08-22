@@ -1,14 +1,19 @@
-FROM node:12-slim
+FROM node:14
 
-# Create app directory
+# Set the working directory inside the container
 WORKDIR /usr/src/app
 
-# Install app dependencies
+# Copy package.json and package-lock.json to the container
 COPY package*.json ./
+
+# Install application dependencies
 RUN npm install
 
-# Bundle app source
+# Copy the rest of the application code to the container
 COPY . .
 
-EXPOSE 8080
+# Expose the port the application will run on
+EXPOSE 8000
+
+# Command to start the application
 CMD [ "node", "app.js" ]
