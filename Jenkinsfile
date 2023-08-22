@@ -25,7 +25,7 @@ pipeline {
                     sh 'docker tag node-hello-world:latest sardar112/test-docker:latest'
 
                     //Login 
-                    sh 'docker login -u sardar112 -p SAdabahar123'
+                    sh 'docker login -u sardar112 -p SAdabahar123 --password-stdin'
 
                     // Push Docker image to Docker Hub
                     sh 'docker push sardar112/test-docker:latest'
