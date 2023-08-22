@@ -1,43 +1,30 @@
 pipeline {
     agent any
     
-    environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub')
-    }
-
     stages {
-        stage('Clone Repository') {
+        stage("clone code") {
             steps {
-                git url: 'https://github.com/sardaralii/hello.git'
+                echo "Cloning the code"
+                git url: "https://github.com/sardaralii/hello.git", branch: "main"
             }
         }
-
-        stage('Build Docker Image') {
+        
+        stage("build") {
             steps {
-                script {
-                    def imageName = "yourusername/your-nodejs-app:latest"
-                    def dockerFile = "path/to/Dockerfile"  // Specify the path to your Dockerfile
-                    docker.build(imageName, "-f ${dockerFile} .")
+                echo "Building the image"
+                sh "docker build -t node-hello-world:latest ."
+            }
+        }
+        
+        stage("push to docker hub") {
+            steps {
+                echo "Pushing to Docker Hub"
+                withCredentials([usernamePassword(credentialsId:"dockerHub",passwordVariable:"dockerHubPass",usernameVariable:"dockerHubuser")]){
+                sh "docker tag node-hello-world:latest ${env.dockerHubUser}/node-hello-world:latest"
+                sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPass}"
+                sh "docker push ${env.dockerHubUser}/node-hello-world:latest"
                 }
             }
-        }
-
-        stage('Push to Docker Hub') {
-            steps {
-                script {
-                    withCredentials([string(credentialsId: 'dockerhub', variable: 'DOCKERHUB_CREDENTIALS_PSW')]) {
-                        sh "echo '\$DOCKERHUB_CREDENTIALS_PSW' | docker login -u '\$DOCKERHUB_CREDENTIALS_USR' --password-stdin"
-                        def imageName = "yourusername/your-nodejs-app:latest"
-                        sh "docker push ${imageName}"
-                    }
-                }
-            }
-        }
-    }
-
-    post {
-        always {
-            sh 'docker logout'
         }
     }
 }
